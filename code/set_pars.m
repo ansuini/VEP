@@ -1,4 +1,4 @@
-function pars = set_pars(experiment)
+function pars = set_pars(varargin)
 
 % set parameters of CSD analysis
 %
@@ -7,14 +7,42 @@ function pars = set_pars(experiment)
 % example   : pars = set_pars_csd('CSD_TEST_1')
 
 pars = struct();
-pars.paths.home = fullfile('/home','ans','repositories','sissa','stlfp'); 
-addpath(genpath(pars.paths.home));    
+pars.paths.home = fullfile('/home','ans','repositories','sissa','VEP'); 
+addpath(genpath(pars.paths.home)); 
 pars.paths.results = fullfile(pars.paths.home, 'results');
+
+if numel(varargin) < 1
+    
+    experiment = 'shape_and_motion';
+    pars.paths.data = fullfile('/media','ans','falassio','DATA','Federica','data_lfp');
+    pars.paths.externaldata = fullfile('/home','ans','Dropbox','Anansi','data');
+    pars.areas_labels = {'V1b', 'LM', 'AL', 'LI', 'LL', 'LLb'};
+    pars.areas_colors = {'b', 'r', 'm', 'g', 'c', 'y'};
+
+    load(fullfile(pars.paths.home, 'areas.mat'))
+    load(fullfile(pars.paths.home, 'bitcodes.mat'))
+    load(fullfile(pars.paths.home, 'block_strings.mat'))
+    load(fullfile(pars.paths.home, 'table.mat'))
+    load(fullfile(pars.paths.home,'lambdas_black_blanks.mat'));
+    
+    pars.backgrounds = lambdas;
+    pars.areas = J;
+    pars.bitcodes = bitcodes;
+    pars.block_strings = C;
+    pars.table = table;
+    
+
+else
+    experiment = varargin{1};
+end
+
+fprintf(['Analyze vep of experiment : ', experiment,'\n'])
 pars.experiment = experiment;
 pars.type_electrode = get_type_electrode(experiment);
 pars.conditions = set_conditions_groups(experiment);
 
 % electrode 
+
 parts = strsplit(pars.type_electrode, '_');
 nshanks = str2num(parts{1});
 nchannels = str2num(parts{3});

@@ -11,7 +11,7 @@ nchannels = pars.nchannels;
 % load block STIM vector
 
 STIM = load(fullfile(folder, 'STIM.mat'));
-STIM = STIM.data;
+STIM = STIM.STIM;
 bitcodes = STIM(:,1);
 times = STIM(:,2);
 conditions = 1:1:342;
@@ -32,8 +32,11 @@ npoints = pars.window.npoints;
 nconditions = numel(conditions);
 
 STLFP = zeros(nchannels, nconditions, npoints);
+NTRIALS = zeros(nchannels, nconditions);
 
-for i = 1 : nchannels 
+for i = 1 :nchannels 
+    
+       %tic
    
        % load LFP
        
@@ -51,8 +54,6 @@ for i = 1 : nchannels
        
        for condition = 1 : nconditions
            
-           tic
-                      
            % get initial times for a condition
            
            [tin, ntrials]  = get_initial_times(bitcodes, times, condition);
@@ -71,17 +72,18 @@ for i = 1 : nchannels
            end
            
        
-           STLFP(i, condition, :) = mean(LFPs, 1);          
-           fprintf(['Condition ', num2str(condition), ' Channel ', num2str(i), '\n'])
-       
-           toc
+           STLFP(i, condition, :) = mean(LFPs, 1); 
+           NTRIALS(i, condition) = ntrials;
            
-       
        end
+       
+       % fprintf([' Channel ', num2str(i), '\n'])
+       
+       %toc
+       
 end
 
-
-
 S.STLFP = STLFP;
+S.NTRIALS = NTRIALS;
 
 end
